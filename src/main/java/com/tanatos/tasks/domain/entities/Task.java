@@ -1,4 +1,4 @@
-package com.tanatos.tasks.domain.entitles;
+package com.tanatos.tasks.domain.entities;
 
 import jakarta.persistence.*;
 
@@ -41,7 +41,7 @@ public class Task {
     private LocalDateTime updated;
 
 
-    public Task() {
+    public Task(UUID id, String title, String description, LocalDateTime localDateTime, TaskStatus status, TaskPriority priority, Object o, Object taskList, Object updated) {
     }
 
     public Task(LocalDateTime created, UUID id, String title, String description, LocalDateTime dueDate, TaskStatus status, TaskPriority priority, TaskList taskList, LocalDateTime updated) {
