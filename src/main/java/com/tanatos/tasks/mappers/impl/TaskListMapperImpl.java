@@ -1,11 +1,14 @@
 package com.tanatos.tasks.mappers.impl;
 
 import com.tanatos.tasks.domain.dto.TaskListDto;
+import com.tanatos.tasks.domain.entities.Task;
 import com.tanatos.tasks.domain.entities.TaskList;
+import com.tanatos.tasks.domain.entities.TaskStatus;
 import com.tanatos.tasks.mappers.TaskListMapper;
 import com.tanatos.tasks.mappers.TaskMapper;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
 import java.util.Optional;
 
 @Component
@@ -40,8 +43,28 @@ public class TaskListMapperImpl implements TaskListMapper {
                 taskList.getId(),
                 taskList.getTitle(),
                 taskList.getDescription(),
+                Optional.ofNullable(taskList.getTasks())
+                        .map(List::size)
+                        .orElse(0),
+                calculateTaskListProgress(taskList.getTasks()),
+                Optional.ofNullable(taskList.getTasks())
+                        .map(tasks ->
+                                tasks.stream().map(taskMapper::toDto).toList()
+                        ).orElse(null)
 
 
         );
+    }
+
+    private Double calculateTaskListProgress(List<Task> tasks){
+        if(null == tasks){
+            return  null;
+        }
+
+        long closedTaskCount = tasks.stream().filter(task ->
+                TaskStatus.CLOSED == task.getStatus()
+        ).count();
+
+        return (double)closedTaskCount / tasks.size();
     }
 }
