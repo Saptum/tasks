@@ -56,15 +56,15 @@ public class TaskListMapperImpl implements TaskListMapper {
         );
     }
 
-//    private Double calculateTaskListProgress(List<Task> tasks){
-//        if(null == tasks){
-//            return  null;
-//        }
-//
-//        long closedTaskCount = tasks.stream().filter(task ->
-//                TaskStatus.CLOSED == task.getStatus()
-//        ).count();
-//
-//        return (double)closedTaskCount / tasks.size();
-//    }
+    private Double calculateTaskListProgress(List<Task> tasks){
+        if(null == tasks){
+            return  null;
+        }
+
+        long closedTaskCount = tasks.stream().filter(task ->
+                TaskStatus.CLOSED == task.getStatus()
+        ).count();
+
+        return (double)closedTaskCount / tasks.size();
+    }
 }
