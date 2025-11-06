@@ -140,18 +140,18 @@ public class Task {
         return Objects.hash(id, title, description, dueDate, status, priority, taskList, created, updated);
     }
 
-    @Override
-    public String toString() {
-        return "Task{" +
-                "id=" + id +
-                ", title='" + title + '\'' +
-                ", description='" + description + '\'' +
-                ", dueDate=" + dueDate +
-                ", status=" + status +
-                ", priority=" + priority +
-                ", taskList=" + taskList +
-                ", created=" + created +
-                ", updated=" + updated +
-                '}';
-    }
+//    @Override
+//    public String toString() {
+//        return "Task{" +
+//                "id=" + id +
+//                ", title='" + title + '\'' +
+//                ", description='" + description + '\'' +
+//                ", dueDate=" + dueDate +
+//                ", status=" + status +
+//                ", priority=" + priority +
+//                ", taskList=" + taskList +
+//                ", created=" + created +
+//                ", updated=" + updated +
+//                '}';
+//    }
 }
