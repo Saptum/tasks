@@ -104,29 +104,29 @@ public class Task {
         this.priority = priority;
     }
 
-    public TaskList getTaskList() {
-        return taskList;
-    }
-
-    public void setTaskList(TaskList taskList) {
-        this.taskList = taskList;
-    }
-
-    public LocalDateTime getCreated() {
-        return created;
-    }
-
-    public void setCreated(LocalDateTime created) {
-        this.created = created;
-    }
-
-    public LocalDateTime getUpdated() {
-        return updated;
-    }
-
-    public void setUpdated(LocalDateTime updated) {
-        this.updated = updated;
-    }
+//    public TaskList getTaskList() {
+//        return taskList;
+//    }
+//
+//    public void setTaskList(TaskList taskList) {
+//        this.taskList = taskList;
+//    }
+//
+//    public LocalDateTime getCreated() {
+//        return created;
+//    }
+//
+//    public void setCreated(LocalDateTime created) {
+//        this.created = created;
+//    }
+//
+//    public LocalDateTime getUpdated() {
+//        return updated;
+//    }
+//
+//    public void setUpdated(LocalDateTime updated) {
+//        this.updated = updated;
+//    }
 
     @Override
     public boolean equals(Object o) {
