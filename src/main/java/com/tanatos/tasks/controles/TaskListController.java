@@ -2,13 +2,14 @@ package com.tanatos.tasks.controles;
 
 
 import com.tanatos.tasks.domain.dto.TaskListDto;
+import com.tanatos.tasks.domain.entities.TaskList;
 import com.tanatos.tasks.mappers.TaskListMapper;
 import com.tanatos.tasks.services.TaskListServices;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
 @RestController
 @RequestMapping( path = "/task-lists")
@@ -31,4 +32,20 @@ public class TaskListController {
                 .toList();
 
     }
+
+    @PostMapping
+    public TaskListDto createTaskList(@RequestBody TaskListDto taskListDto){
+        TaskList createTaskList = taskListService.createTaskList(
+                taskListMapper.fromDto(taskListDto)
+        );
+        return taskListMapper.toDto(createTaskList);
+    }
+
+    @GetMapping(path = "/{task_list_id}")
+    public Optional<TaskListDto> getTaskList(@PathVariable("task_list_id")UUID taskListId){
+        return  taskListService.getTaskList( taskListId).map(taskListMapper::toDto);
+    }
+
+
+
 }
