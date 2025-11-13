@@ -2,12 +2,10 @@ package com.tanatos.tasks.controles;
 
 
 import com.tanatos.tasks.domain.dto.TaskDto;
+import com.tanatos.tasks.domain.entities.Task;
 import com.tanatos.tasks.mappers.TaskMapper;
 import com.tanatos.tasks.services.TaskServices;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.UUID;
@@ -30,5 +28,16 @@ public class TasksController {
                 .stream()
                 .map(taskMapper::toDto)
                 .toList();
+    }
+
+    @PostMapping
+    public TaskDto createTask(
+            @PathVariable("task_list_id")UUID taskListId,
+            @RequestBody TaskDto taskDto){
+        Task createdTask =taskServices.createTask(
+                taskListId,
+                taskMapper.fromDto(taskDto)
+        );
+        return taskMapper.toDto(createdTask);
     }
 }
