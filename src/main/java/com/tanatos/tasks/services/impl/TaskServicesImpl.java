@@ -47,7 +47,7 @@ public class TaskServicesImpl implements TaskServices {
         TaskStatus taskStatus = TaskStatus.OPEN;
 
         TaskList taskList = taskListRepositories.findById(taskListId)
-                .orElse(() -> new IllegalArgumentException("Invalid Task List ID provided"));
+                .orElseThrow(() -> new IllegalArgumentException("Invalid Task List ID provided"));
 
         LocalDateTime now = LocalDateTime.now();
         Task taskToSave = new Task(
@@ -64,6 +64,11 @@ public class TaskServicesImpl implements TaskServices {
 
         return taskRepositories.save(taskToSave);
 
+    }
+
+    @Override
+    public Optional<Task> getTask(UUID taskListId, UUID taskId) {
+        return taskRepositories.findByTaskListIdAndId(taskListId, taskId);
     }
 
 

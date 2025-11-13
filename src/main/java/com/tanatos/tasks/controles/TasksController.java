@@ -8,6 +8,7 @@ import com.tanatos.tasks.services.TaskServices;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @RestController
@@ -40,4 +41,14 @@ public class TasksController {
         );
         return taskMapper.toDto(createdTask);
     }
+
+    @GetMapping(path = "/{task_id}")
+    public Optional<TaskDto> getTask(
+        @PathVariable("task_list_id")UUID taskListId,
+        @PathVariable("task_id")UUID taskId
+    ){
+        return taskServices.getTask(taskListId, taskId)
+                .map(taskMapper::toDto);
+    }
+
 }
