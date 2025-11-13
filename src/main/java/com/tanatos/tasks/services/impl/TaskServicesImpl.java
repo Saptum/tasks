@@ -7,6 +7,7 @@ import com.tanatos.tasks.domain.entities.TaskStatus;
 import com.tanatos.tasks.repositories.TaskListRepositories;
 import com.tanatos.tasks.repositories.TaskRepositories;
 import com.tanatos.tasks.services.TaskServices;
+import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 import javax.swing.text.html.Option;
@@ -33,6 +34,7 @@ public class TaskServicesImpl implements TaskServices {
         return taskRepositories.findByTaskListId(taskListId);
     }
 
+    @Transactional
     @Override
     public Task createTask(UUID taskListId, Task task) {
         if (null != task.getId()){
@@ -72,6 +74,7 @@ public class TaskServicesImpl implements TaskServices {
         return taskRepositories.findByTaskListIdAndId(taskListId, taskId);
     }
 
+    @Transactional
     @Override
     public Task updateTask(UUID taskListId, UUID taskId, Task task) {
         if (null == task.getId()){
@@ -102,6 +105,7 @@ public class TaskServicesImpl implements TaskServices {
 
     }
 
+    @Transactional
     @Override
     public void deleteTask(UUID taskListId, UUID taskId) {
         taskRepositories.deleteByTaskListIdAndId(taskListId,taskId);

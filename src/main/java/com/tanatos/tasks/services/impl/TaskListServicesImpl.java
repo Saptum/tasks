@@ -3,6 +3,7 @@ package com.tanatos.tasks.services.impl;
 import com.tanatos.tasks.domain.entities.TaskList;
 import com.tanatos.tasks.repositories.TaskListRepositories;
 import com.tanatos.tasks.services.TaskListServices;
+import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -55,6 +56,7 @@ public class TaskListServicesImpl implements TaskListServices {
         return taskListRepositories.findById(id);
     }
 
+    @Transactional
     @Override
     public TaskList updateTaskList(UUID taskListId, TaskList taskList) {
         if (null == taskList.getId()){
