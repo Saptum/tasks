@@ -102,5 +102,10 @@ public class TaskServicesImpl implements TaskServices {
 
     }
 
+    @Override
+    public void deleteTask(UUID taskListId, UUID taskId) {
+        taskRepositories.deleteByTaskListIdAndId(taskListId,taskId);
+    }
+
 
 }
