@@ -47,7 +47,7 @@ public class TaskListController {
     }
 
     @PutMapping(path = "/{task_list_id}")
-    public TaskListDto(
+    public TaskListDto updateTaskList(
             @PathVariable("task_list_id") UUID taskListId,
             @RequestBody TaskListDto taskListDto,
             TaskListMapper taskListMapper
