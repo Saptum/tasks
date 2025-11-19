@@ -1,0 +1,1445 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TaskFlow - Smart Task Management</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #4361ee;
+            --primary-dark: #3a56d4;
+            --secondary: #7209b7;
+            --success: #4cc9f0;
+            --danger: #f72585;
+            --warning: #f8961e;
+            --info: #4895ef;
+            --light: #f8f9fa;
+            --dark: #212529;
+            --gray: #6c757d;
+            --border: #dee2e6;
+            --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --radius: 8px;
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: var(--dark);
+            line-height: 1.6;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .app-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            overflow: hidden;
+            min-height: calc(100vh - 40px);
+            display: flex;
+            flex-direction: column;
+        }
+
+        header {
+            background: var(--primary);
+            color: white;
+            padding: 1.5rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        .logo i {
+            font-size: 1.8rem;
+        }
+
+        .user-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .main-content {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+        }
+
+        .sidebar {
+            width: 300px;
+            background: var(--light);
+            border-right: 1px solid var(--border);
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .nav-tabs {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .nav-tab {
+            padding: 12px 15px;
+            border-radius: var(--radius);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: var(--transition);
+            font-weight: 500;
+        }
+
+        .nav-tab:hover {
+            background: rgba(67, 97, 238, 0.1);
+            color: var(--primary);
+        }
+
+        .nav-tab.active {
+            background: var(--primary);
+            color: white;
+        }
+
+        .content-area {
+            flex: 1;
+            padding: 2rem;
+            overflow-y: auto;
+            background: #f9fafb;
+        }
+
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        h2 {
+            font-size: 1.5rem;
+            color: var(--dark);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: var(--radius);
+            cursor: pointer;
+            font-weight: 500;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: var(--transition);
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+        }
+
+        .btn-danger {
+            background: var(--danger);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #e11574;
+        }
+
+        .btn-success {
+            background: var(--success);
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #3ab8dd;
+        }
+
+        .card {
+            background: white;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            transition: var(--transition);
+        }
+
+        .card:hover {
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .form-group {
+            margin-bottom: 1.2rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: var(--dark);
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 10px 15px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            font-size: 1rem;
+            transition: var(--transition);
+        }
+
+        .form-control:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.2);
+            outline: none;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .task-list-card {
+            border-left: 4px solid var(--primary);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .task-list-card h3 {
+            margin-bottom: 0.5rem;
+            color: var(--primary);
+        }
+
+        .task-list-meta {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 1rem;
+            font-size: 0.9rem;
+            color: var(--gray);
+        }
+
+        .progress-container {
+            margin: 10px 0;
+        }
+
+        .progress-bar {
+            height: 8px;
+            background: #e9ecef;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: var(--success);
+            transition: width 0.5s ease;
+        }
+
+        .task-card {
+            border-left: 4px solid var(--info);
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .task-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+
+        .task-title {
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        .task-priority {
+            padding: 4px 8px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .priority-high {
+            background: rgba(247, 37, 133, 0.1);
+            color: var(--danger);
+        }
+
+        .priority-medium {
+            background: rgba(248, 150, 30, 0.1);
+            color: var(--warning);
+        }
+
+        .priority-low {
+            background: rgba(76, 201, 240, 0.1);
+            color: var(--success);
+        }
+
+        .task-due-date {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 0.9rem;
+            color: var(--gray);
+        }
+
+        .task-status {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .status-open {
+            background: rgba(67, 97, 238, 0.1);
+            color: var(--primary);
+        }
+
+        .status-closed {
+            background: rgba(108, 117, 125, 0.1);
+            color: var(--gray);
+        }
+
+        .actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        .btn-sm {
+            padding: 6px 12px;
+            font-size: 0.85rem;
+        }
+
+        .btn-icon {
+            padding: 8px;
+            border-radius: 50%;
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 3rem 2rem;
+            color: var(--gray);
+        }
+
+        .empty-state i {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            color: #ced4da;
+        }
+
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 20px;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            max-width: 400px;
+            transform: translateX(150%);
+            transition: transform 0.3s ease;
+        }
+
+        .notification.show {
+            transform: translateX(0);
+        }
+
+        .notification.success {
+            background: #d1edff;
+            color: #0c5460;
+            border-left: 4px solid var(--success);
+        }
+
+        .notification.error {
+            background: #f8d7da;
+            color: #721c24;
+            border-left: 4px solid var(--danger);
+        }
+
+        .loader {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .loading {
+            opacity: 0.7;
+            pointer-events: none;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .modal.show {
+            display: flex;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: var(--radius);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            width: 100%;
+            max-width: 600px;
+            max-height: 90vh;
+            overflow-y: auto;
+            animation: slideUp 0.3s ease;
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(30px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .modal-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-body {
+            padding: 1.5rem;
+        }
+
+        .modal-footer {
+            padding: 1rem 1.5rem;
+            border-top: 1px solid var(--border);
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+
+        .close {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--gray);
+        }
+
+        .stats-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: 1.5rem;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            color: var(--gray);
+            font-size: 0.9rem;
+        }
+
+        .stat-card.primary { border-top: 4px solid var(--primary); }
+        .stat-card.success { border-top: 4px solid var(--success); }
+        .stat-card.warning { border-top: 4px solid var(--warning); }
+        .stat-card.danger { border-top: 4px solid var(--danger); }
+
+        @media (max-width: 992px) {
+            .main-content {
+                flex-direction: column;
+            }
+
+            .sidebar {
+                width: 100%;
+                border-right: none;
+                border-bottom: 1px solid var(--border);
+            }
+
+            .nav-tabs {
+                flex-direction: row;
+                overflow-x: auto;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .grid {
+                grid-template-columns: 1fr;
+            }
+
+            .section-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+
+            header {
+                flex-direction: column;
+                gap: 15px;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="app-container">
+    <header>
+        <div class="logo">
+            <i class="fas fa-tasks"></i>
+            <span>TaskFlow</span>
+        </div>
+        <div class="user-actions">
+            <button class="btn btn-primary" id="refresh-btn">
+                <i class="fas fa-sync-alt"></i> Refresh
+            </button>
+        </div>
+    </header>
+
+    <div class="main-content">
+        <div class="sidebar">
+            <div class="nav-tabs">
+                <div class="nav-tab active" data-tab="dashboard">
+                    <i class="fas fa-chart-pie"></i>
+                    <span>Dashboard</span>
+                </div>
+                <div class="nav-tab" data-tab="task-lists">
+                    <i class="fas fa-list-alt"></i>
+                    <span>Task Lists</span>
+                </div>
+                <div class="nav-tab" data-tab="tasks">
+                    <i class="fas fa-tasks"></i>
+                    <span>All Tasks</span>
+                </div>
+                <div class="nav-tab" data-tab="create-task">
+                    <i class="fas fa-plus-circle"></i>
+                    <span>Create Task</span>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="task-list-filter">Filter by Task List</label>
+                <select id="task-list-filter" class="form-control">
+                    <option value="">All Task Lists</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="status-filter">Filter by Status</label>
+                <select id="status-filter" class="form-control">
+                    <option value="">All Statuses</option>
+                    <option value="OPEN">Open</option>
+                    <option value="CLOSED">Closed</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="priority-filter">Filter by Priority</label>
+                <select id="priority-filter" class="form-control">
+                    <option value="">All Priorities</option>
+                    <option value="HIGH">High</option>
+                    <option value="MEDIUM">Medium</option>
+                    <option value="LOW">Low</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="content-area">
+            <!-- Dashboard Tab -->
+            <div id="dashboard" class="tab-content active">
+                <div class="section-header">
+                    <h2><i class="fas fa-chart-pie"></i> Dashboard</h2>
+                </div>
+
+                <div class="stats-container">
+                    <div class="stat-card primary">
+                        <div class="stat-value" id="total-task-lists">0</div>
+                        <div class="stat-label">Task Lists</div>
+                    </div>
+                    <div class="stat-card success">
+                        <div class="stat-value" id="total-tasks">0</div>
+                        <div class="stat-label">Total Tasks</div>
+                    </div>
+                    <div class="stat-card warning">
+                        <div class="stat-value" id="open-tasks">0</div>
+                        <div class="stat-label">Open Tasks</div>
+                    </div>
+                    <div class="stat-card danger">
+                        <div class="stat-value" id="high-priority-tasks">0</div>
+                        <div class="stat-label">High Priority</div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3>Recent Task Lists</h3>
+                    <div id="recent-task-lists" class="grid">
+                        <!-- Recent task lists will be loaded here -->
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3>Upcoming Tasks</h3>
+                    <div id="upcoming-tasks" class="grid">
+                        <!-- Upcoming tasks will be loaded here -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Task Lists Tab -->
+            <div id="task-lists" class="tab-content">
+                <div class="section-header">
+                    <h2><i class="fas fa-list-alt"></i> Task Lists</h2>
+                    <button class="btn btn-primary" id="create-task-list-btn">
+                        <i class="fas fa-plus"></i> New Task List
+                    </button>
+                </div>
+
+                <div id="task-lists-container" class="grid">
+                    <!-- Task lists will be loaded here -->
+                </div>
+            </div>
+
+            <!-- Tasks Tab -->
+            <div id="tasks" class="tab-content">
+                <div class="section-header">
+                    <h2><i class="fas fa-tasks"></i> All Tasks</h2>
+                </div>
+
+                <div id="tasks-container" class="grid">
+                    <!-- Tasks will be loaded here -->
+                </div>
+            </div>
+
+            <!-- Create Task Tab -->
+            <div id="create-task" class="tab-content">
+                <div class="section-header">
+                    <h2><i class="fas fa-plus-circle"></i> Create New Task</h2>
+                </div>
+
+                <div class="card">
+                    <form id="create-task-form">
+                        <div class="form-group">
+                            <label for="task-title">Title *</label>
+                            <input type="text" id="task-title" class="form-control" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="task-description">Description</label>
+                            <textarea id="task-description" class="form-control" rows="3"></textarea>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="task-list-select">Task List *</label>
+                            <select id="task-list-select" class="form-control" required>
+                                <option value="">Select a task list</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="task-due-date">Due Date</label>
+                            <input type="datetime-local" id="task-due-date" class="form-control">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="task-priority">Priority</label>
+                            <select id="task-priority" class="form-control">
+                                <option value="HIGH">High</option>
+                                <option value="MEDIUM" selected>Medium</option>
+                                <option value="LOW">Low</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="task-status">Status</label>
+                            <select id="task-status" class="form-control">
+                                <option value="OPEN" selected>Open</option>
+                                <option value="CLOSED">Closed</option>
+                            </select>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-check"></i> Create Task
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Notification -->
+<div id="notification" class="notification">
+    <i class="fas fa-check-circle"></i>
+    <span id="notification-message">Operation completed successfully</span>
+</div>
+
+<!-- Create Task List Modal -->
+<div id="create-task-list-modal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>Create New Task List</h3>
+            <button class="close">&times;</button>
+        </div>
+        <div class="modal-body">
+            <form id="create-task-list-form">
+                <div class="form-group">
+                    <label for="task-list-title">Title *</label>
+                    <input type="text" id="task-list-title" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label for="task-list-description">Description</label>
+                    <textarea id="task-list-description" class="form-control" rows="3"></textarea>
+                </div>
+            </form>
+        </div>
+        <div class="modal-footer">
+            <button class="btn" id="cancel-task-list">Cancel</button>
+            <button class="btn btn-primary" id="save-task-list">Create Task List</button>
+        </div>
+    </div>
+</div>
+
+<!-- Edit Task Modal -->
+<div id="edit-task-modal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>Edit Task</h3>
+            <button class="close">&times;</button>
+        </div>
+        <div class="modal-body">
+            <form id="edit-task-form">
+                <input type="hidden" id="edit-task-id">
+                <div class="form-group">
+                    <label for="edit-task-title">Title *</label>
+                    <input type="text" id="edit-task-title" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label for="edit-task-description">Description</label>
+                    <textarea id="edit-task-description" class="form-control" rows="3"></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="edit-task-list-select">Task List *</label>
+                    <select id="edit-task-list-select" class="form-control" required>
+                        <option value="">Select a task list</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="edit-task-due-date">Due Date</label>
+                    <input type="datetime-local" id="edit-task-due-date" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label for="edit-task-priority">Priority</label>
+                    <select id="edit-task-priority" class="form-control">
+                        <option value="HIGH">High</option>
+                        <option value="MEDIUM">Medium</option>
+                        <option value="LOW">Low</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="edit-task-status">Status</label>
+                    <select id="edit-task-status" class="form-control">
+                        <option value="OPEN">Open</option>
+                        <option value="CLOSED">Closed</option>
+                    </select>
+                </div>
+            </form>
+        </div>
+        <div class="modal-footer">
+            <button class="btn" id="cancel-edit-task">Cancel</button>
+            <button class="btn btn-primary" id="save-edit-task">Save Changes</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    // API Configuration
+    const API_BASE = 'http://localhost:8080';
+
+    // Global State
+    const state = {
+        taskLists: [],
+        tasks: [],
+        currentTaskListId: null,
+        filters: {
+            taskList: '',
+            status: '',
+            priority: ''
+        }
+    };
+
+    // DOM Elements
+    const elements = {
+        // Tabs
+        navTabs: document.querySelectorAll('.nav-tab'),
+        tabContents: document.querySelectorAll('.tab-content'),
+
+        // Forms
+        createTaskForm: document.getElementById('create-task-form'),
+        createTaskListForm: document.getElementById('create-task-list-form'),
+        editTaskForm: document.getElementById('edit-task-form'),
+
+        // Containers
+        taskListsContainer: document.getElementById('task-lists-container'),
+        tasksContainer: document.getElementById('tasks-container'),
+        recentTaskLists: document.getElementById('recent-task-lists'),
+        upcomingTasks: document.getElementById('upcoming-tasks'),
+
+        // Selectors
+        taskListSelect: document.getElementById('task-list-select'),
+        taskListFilter: document.getElementById('task-list-filter'),
+        statusFilter: document.getElementById('status-filter'),
+        priorityFilter: document.getElementById('priority-filter'),
+        editTaskListSelect: document.getElementById('edit-task-list-select'),
+
+        // Buttons
+        refreshBtn: document.getElementById('refresh-btn'),
+        createTaskListBtn: document.getElementById('create-task-list-btn'),
+        saveTaskListBtn: document.getElementById('save-task-list'),
+        cancelTaskListBtn: document.getElementById('cancel-task-list'),
+        saveEditTaskBtn: document.getElementById('save-edit-task'),
+        cancelEditTaskBtn: document.getElementById('cancel-edit-task'),
+
+        // Modals
+        createTaskListModal: document.getElementById('create-task-list-modal'),
+        editTaskModal: document.getElementById('edit-task-modal'),
+
+        // Notification
+        notification: document.getElementById('notification'),
+        notificationMessage: document.getElementById('notification-message'),
+
+        // Stats
+        totalTaskLists: document.getElementById('total-task-lists'),
+        totalTasks: document.getElementById('total-tasks'),
+        openTasks: document.getElementById('open-tasks'),
+        highPriorityTasks: document.getElementById('high-priority-tasks')
+    };
+
+    // Initialize the application
+    function init() {
+        setupEventListeners();
+        loadInitialData();
+    }
+
+    // Set up all event listeners
+    function setupEventListeners() {
+        // Tab navigation
+        elements.navTabs.forEach(tab => {
+            tab.addEventListener('click', () => switchTab(tab.dataset.tab));
+        });
+
+        // Forms
+        elements.createTaskForm.addEventListener('submit', handleCreateTask);
+        elements.createTaskListForm.addEventListener('submit', handleCreateTaskList);
+        elements.editTaskForm.addEventListener('submit', handleEditTask);
+
+        // Buttons
+        elements.refreshBtn.addEventListener('click', loadInitialData);
+        elements.createTaskListBtn.addEventListener('click', () => showModal(elements.createTaskListModal));
+        elements.saveTaskListBtn.addEventListener('click', () => elements.createTaskListForm.requestSubmit());
+        elements.cancelTaskListBtn.addEventListener('click', () => hideModal(elements.createTaskListModal));
+        elements.saveEditTaskBtn.addEventListener('click', () => elements.editTaskForm.requestSubmit());
+        elements.cancelEditTaskBtn.addEventListener('click', () => hideModal(elements.editTaskModal));
+
+        // Filters
+        elements.taskListFilter.addEventListener('change', (e) => {
+            state.filters.taskList = e.target.value;
+            applyFilters();
+        });
+        elements.statusFilter.addEventListener('change', (e) => {
+            state.filters.status = e.target.value;
+            applyFilters();
+        });
+        elements.priorityFilter.addEventListener('change', (e) => {
+            state.filters.priority = e.target.value;
+            applyFilters();
+        });
+
+        // Modal close buttons
+        document.querySelectorAll('.modal .close').forEach(btn => {
+            btn.addEventListener('click', () => {
+                hideModal(btn.closest('.modal'));
+            });
+        });
+
+        // Close modals when clicking outside
+        document.querySelectorAll('.modal').forEach(modal => {
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) hideModal(modal);
+            });
+        });
+    }
+
+    // Load initial data
+    async function loadInitialData() {
+        try {
+            setLoadingState(true);
+            await Promise.all([loadTaskLists(), loadAllTasks()]);
+            updateDashboard();
+            applyFilters();
+            showNotification('Data loaded successfully', 'success');
+        } catch (error) {
+            console.error('Failed to load initial data:', error);
+            showNotification('Failed to load data', 'error');
+        } finally {
+            setLoadingState(false);
+        }
+    }
+
+    // Set loading state
+    function setLoadingState(isLoading) {
+        document.body.classList.toggle('loading', isLoading);
+        elements.refreshBtn.innerHTML = isLoading
+            ? '<div class="loader"></div> Refreshing...'
+            : '<i class="fas fa-sync-alt"></i> Refresh';
+    }
+
+    // Switch between tabs
+    function switchTab(tabId) {
+        // Update active tab
+        elements.navTabs.forEach(tab => {
+            tab.classList.toggle('active', tab.dataset.tab === tabId);
+        });
+
+        // Show active content
+        elements.tabContents.forEach(content => {
+            content.classList.toggle('active', content.id === tabId);
+        });
+
+        // Load data for specific tabs if needed
+        if (tabId === 'tasks') {
+            applyFilters();
+        }
+    }
+
+    // Load task lists
+    async function loadTaskLists() {
+        try {
+            const response = await fetch(`${API_BASE}/task-lists`);
+            if (!response.ok) throw new Error('Failed to fetch task lists');
+
+            state.taskLists = await response.json();
+            renderTaskListSelectors();
+            renderTaskLists();
+        } catch (error) {
+            console.error('Error loading task lists:', error);
+            throw error;
+        }
+    }
+
+    // Load all tasks
+    async function loadAllTasks() {
+        try {
+            // Get all tasks from all task lists
+            const allTasks = [];
+            for (const taskList of state.taskLists) {
+                try {
+                    const response = await fetch(`${API_BASE}/task-lists/${taskList.id}/tasks`);
+                    if (response.ok) {
+                        const tasks = await response.json();
+                        tasks.forEach(task => {
+                            task.taskListName = taskList.title;
+                            allTasks.push(task);
+                        });
+                    }
+                } catch (error) {
+                    console.error(`Error loading tasks for list ${taskList.id}:`, error);
+                }
+            }
+
+            state.tasks = allTasks;
+            renderTasks();
+        } catch (error) {
+            console.error('Error loading tasks:', error);
+            throw error;
+        }
+    }
+
+    // Render task list selectors
+    function renderTaskListSelectors() {
+        const options = '<option value="">Select a task list</option>' +
+            state.taskLists.map(list =>
+                `<option value="${list.id}">${list.title}</option>`
+            ).join('');
+
+        elements.taskListSelect.innerHTML = options;
+        elements.editTaskListSelect.innerHTML = options;
+        elements.taskListFilter.innerHTML = '<option value="">All Task Lists</option>' +
+            state.taskLists.map(list =>
+                `<option value="${list.id}">${list.title}</option>`
+            ).join('');
+    }
+
+    // Render task lists
+    function renderTaskLists() {
+        if (state.taskLists.length === 0) {
+            elements.taskListsContainer.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-list-alt"></i>
+                        <h3>No Task Lists Found</h3>
+                        <p>Create your first task list to get started</p>
+                    </div>
+                `;
+            return;
+        }
+
+        elements.taskListsContainer.innerHTML = state.taskLists.map(taskList => `
+                <div class="card task-list-card">
+                    <h3>${taskList.title}</h3>
+                    <p>${taskList.description || 'No description'}</p>
+
+                    <div class="progress-container">
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: ${(taskList.progress || 0) * 100}%"></div>
+                        </div>
+                        <small>${Math.round((taskList.progress || 0) * 100)}% complete</small>
+                    </div>
+
+                    <div class="task-list-meta">
+                        <span><i class="fas fa-tasks"></i> ${taskList.count || 0} tasks</span>
+                    </div>
+
+                    <div class="actions">
+                        <button class="btn btn-primary btn-sm" onclick="viewTasks('${taskList.id}')">
+                            <i class="fas fa-eye"></i> View
+                        </button>
+                        <button class="btn btn-danger btn-sm" onclick="deleteTaskList('${taskList.id}')">
+                            <i class="fas fa-trash"></i> Delete
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+
+        // Update recent task lists in dashboard
+        const recentLists = state.taskLists.slice(0, 4);
+        elements.recentTaskLists.innerHTML = recentLists.map(taskList => `
+                <div class="card task-list-card">
+                    <h3>${taskList.title}</h3>
+                    <p>${taskList.description || 'No description'}</p>
+                    <div class="task-list-meta">
+                        <span><i class="fas fa-tasks"></i> ${taskList.count || 0} tasks</span>
+                        <span>${Math.round((taskList.progress || 0) * 100)}% complete</span>
+                    </div>
+                </div>
+            `).join('');
+    }
+
+    // Render tasks
+    function renderTasks() {
+        let filteredTasks = [...state.tasks];
+
+        // Apply filters
+        if (state.filters.taskList) {
+            filteredTasks = filteredTasks.filter(task =>
+                task.taskListId === state.filters.taskList
+            );
+        }
+
+        if (state.filters.status) {
+            filteredTasks = filteredTasks.filter(task =>
+                task.status === state.filters.status
+            );
+        }
+
+        if (state.filters.priority) {
+            filteredTasks = filteredTasks.filter(task =>
+                task.priority === state.filters.priority
+            );
+        }
+
+        if (filteredTasks.length === 0) {
+            elements.tasksContainer.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-tasks"></i>
+                        <h3>No Tasks Found</h3>
+                        <p>${state.tasks.length === 0 ? 'Create your first task to get started' : 'No tasks match your current filters'}</p>
+                    </div>
+                `;
+            return;
+        }
+
+        elements.tasksContainer.innerHTML = filteredTasks.map(task => `
+                <div class="card task-card">
+                    <div class="task-header">
+                        <div class="task-title">${task.title}</div>
+                        <div class="task-priority priority-${task.priority.toLowerCase()}">
+                            ${task.priority}
+                        </div>
+                    </div>
+
+                    <p>${task.description || 'No description'}</p>
+
+                    ${task.dueDate ? `
+                        <div class="task-due-date">
+                            <i class="far fa-clock"></i>
+                            Due: ${new Date(task.dueDate).toLocaleString()}
+                        </div>
+                    ` : ''}
+
+                    <div class="task-status status-${task.status.toLowerCase()}">
+                        ${task.status}
+                    </div>
+
+                    <div class="task-list-meta">
+                        <span><i class="fas fa-list-alt"></i> ${task.taskListName}</span>
+                    </div>
+
+                    <div class="actions">
+                        <button class="btn btn-primary btn-sm" onclick="editTask('${task.id}')">
+                            <i class="fas fa-edit"></i> Edit
+                        </button>
+                        <button class="btn btn-danger btn-sm" onclick="deleteTask('${task.id}')">
+                            <i class="fas fa-trash"></i> Delete
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+
+        // Update upcoming tasks in dashboard (tasks with due date in the future)
+        const now = new Date();
+        const upcoming = state.tasks
+            .filter(task => task.dueDate && new Date(task.dueDate) > now)
+            .slice(0, 4);
+
+        elements.upcomingTasks.innerHTML = upcoming.map(task => `
+                <div class="card task-card">
+                    <div class="task-header">
+                        <div class="task-title">${task.title}</div>
+                        <div class="task-priority priority-${task.priority.toLowerCase()}">
+                            ${task.priority}
+                        </div>
+                    </div>
+
+                    <div class="task-due-date">
+                        <i class="far fa-clock"></i>
+                        Due: ${new Date(task.dueDate).toLocaleString()}
+                    </div>
+
+                    <div class="task-list-meta">
+                        <span><i class="fas fa-list-alt"></i> ${task.taskListName}</span>
+                    </div>
+                </div>
+            `).join('');
+    }
+
+    // Apply filters to tasks
+    function applyFilters() {
+        renderTasks();
+    }
+
+    // Update dashboard statistics
+    function updateDashboard() {
+        elements.totalTaskLists.textContent = state.taskLists.length;
+        elements.totalTasks.textContent = state.tasks.length;
+        elements.openTasks.textContent = state.tasks.filter(task => task.status === 'OPEN').length;
+        elements.highPriorityTasks.textContent = state.tasks.filter(task => task.priority === 'HIGH').length;
+    }
+
+    // Handle create task
+    async function handleCreateTask(e) {
+        e.preventDefault();
+
+        const formData = new FormData(e.target);
+        const taskListId = elements.taskListSelect.value;
+
+        if (!taskListId) {
+            showNotification('Please select a task list', 'error');
+            return;
+        }
+
+        const taskData = {
+            title: formData.get('title') || document.getElementById('task-title').value,
+            description: formData.get('description') || document.getElementById('task-description').value,
+            dueDate: document.getElementById('task-due-date').value || null,
+            priority: document.getElementById('task-priority').value,
+            status: document.getElementById('task-status').value
+        };
+
+        try {
+            setLoadingState(true);
+            const response = await fetch(`${API_BASE}/task-lists/${taskListId}/tasks`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(taskData)
+            });
+
+            if (!response.ok) throw new Error('Failed to create task');
+
+            showNotification('Task created successfully', 'success');
+            e.target.reset();
+            await loadAllTasks();
+            updateDashboard();
+        } catch (error) {
+            console.error('Error creating task:', error);
+            showNotification('Failed to create task', 'error');
+        } finally {
+            setLoadingState(false);
+        }
+    }
+
+    // Handle create task list
+    async function handleCreateTaskList(e) {
+        e.preventDefault();
+
+        const formData = new FormData(e.target);
+        const taskListData = {
+            title: document.getElementById('task-list-title').value,
+            description: document.getElementById('task-list-description').value
+        };
+
+        try {
+            setLoadingState(true);
+            const response = await fetch(`${API_BASE}/task-lists`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(taskListData)
+            });
+
+            if (!response.ok) throw new Error('Failed to create task list');
+
+            showNotification('Task list created successfully', 'success');
+            hideModal(elements.createTaskListModal);
+            e.target.reset();
+            await loadTaskLists();
+            updateDashboard();
+        } catch (error) {
+            console.error('Error creating task list:', error);
+            showNotification('Failed to create task list', 'error');
+        } finally {
+            setLoadingState(false);
+        }
+    }
+
+    // Handle edit task
+    async function handleEditTask(e) {
+        e.preventDefault();
+
+        const taskId = document.getElementById('edit-task-id').value;
+        const taskListId = document.getElementById('edit-task-list-select').value;
+
+        const taskData = {
+            id: taskId,
+            title: document.getElementById('edit-task-title').value,
+            description: document.getElementById('edit-task-description').value,
+            dueDate: document.getElementById('edit-task-due-date').value || null,
+            priority: document.getElementById('edit-task-priority').value,
+            status: document.getElementById('edit-task-status').value
+        };
+
+        try {
+            setLoadingState(true);
+            const response = await fetch(`${API_BASE}/task-lists/${taskListId}/tasks/${taskId}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(taskData)
+            });
+
+            if (!response.ok) throw new Error('Failed to update task');
+
+            showNotification('Task updated successfully', 'success');
+            hideModal(elements.editTaskModal);
+            await loadAllTasks();
+            updateDashboard();
+        } catch (error) {
+            console.error('Error updating task:', error);
+            showNotification('Failed to update task', 'error');
+        } finally {
+            setLoadingState(false);
+        }
+    }
+
+    // Edit task
+    async function editTask(taskId) {
+        const task = state.tasks.find(t => t.id === taskId);
+        if (!task) {
+            showNotification('Task not found', 'error');
+            return;
+        }
+
+        document.getElementById('edit-task-id').value = task.id;
+        document.getElementById('edit-task-title').value = task.title;
+        document.getElementById('edit-task-description').value = task.description || '';
+        document.getElementById('edit-task-due-date').value = task.dueDate ?
+            new Date(task.dueDate).toISOString().slice(0, 16) : '';
+        document.getElementById('edit-task-priority').value = task.priority;
+        document.getElementById('edit-task-status').value = task.status;
+        document.getElementById('edit-task-list-select').value = task.taskListId;
+
+        showModal(elements.editTaskModal);
+    }
+
+    // Delete task
+    async function deleteTask(taskId) {
+        const task = state.tasks.find(t => t.id === taskId);
+        if (!task) {
+            showNotification('Task not found', 'error');
+            return;
+        }
+
+        if (!confirm(`Are you sure you want to delete the task "${task.title}"?`)) {
+            return;
+        }
+
+        try {
+            setLoadingState(true);
+            const response = await fetch(`${API_BASE}/task-lists/${task.taskListId}/tasks/${taskId}`, {
+                method: 'DELETE'
+            });
+
+            if (!response.ok) throw new Error('Failed to delete task');
+
+            showNotification('Task deleted successfully', 'success');
+            await loadAllTasks();
+            updateDashboard();
+        } catch (error) {
+            console.error('Error deleting task:', error);
+            showNotification('Failed to delete task', 'error');
+        } finally {
+            setLoadingState(false);
+        }
+    }
+
+    // Delete task list
+    async function deleteTaskList(taskListId) {
+        const taskList = state.taskLists.find(tl => tl.id === taskListId);
+        if (!taskList) {
+            showNotification('Task list not found', 'error');
+            return;
+        }
+
+        if (!confirm(`Are you sure you want to delete the task list "${taskList.title}"? This will also delete all tasks in this list.`)) {
+            return;
+        }
+
+        try {
+            setLoadingState(true);
+            const response = await fetch(`${API_BASE}/task-lists/${taskListId}`, {
+                method: 'DELETE'
+            });
+
+            if (!response.ok) throw new Error('Failed to delete task list');
+
+            showNotification('Task list deleted successfully', 'success');
+            await loadInitialData();
+        } catch (error) {
+            console.error('Error deleting task list:', error);
+            showNotification('Failed to delete task list', 'error');
+        } finally {
+            setLoadingState(false);
+        }
+    }
+
+    // View tasks in a specific list
+    function viewTasks(taskListId) {
+        elements.taskListFilter.value = taskListId;
+        state.filters.taskList = taskListId;
+        switchTab('tasks');
+        applyFilters();
+    }
+
+    // Show modal
+    function showModal(modal) {
+        modal.classList.add('show');
+    }
+
+    // Hide modal
+    function hideModal(modal) {
+        modal.classList.remove('show');
+    }
+
+    // Show notification
+    function showNotification(message, type = 'success') {
+        elements.notificationMessage.textContent = message;
+        elements.notification.className = `notification ${type} show`;
+
+        setTimeout(() => {
+            elements.notification.classList.remove('show');
+        }, 5000);
+    }
+
+    // Initialize the app when DOM is loaded
+    document.addEventListener('DOMContentLoaded', init);
+</script>
+</body>
+</html>
