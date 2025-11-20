@@ -30,18 +30,32 @@ public class Task {
     @Column(name = "priority", nullable = false)
     private TaskPriority priority;
 
-    @ManyToOne(fetch =  FetchType.LAZY)
-    @JoinColumn(name =  "task_list_id")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "task_list_id")
     private TaskList taskList;
 
-    @Column(name = "created" , nullable = false)
+    @Column(name = "created", nullable = false)
     private LocalDateTime created;
 
-    @Column(name = "updated" , nullable = false)
+    @Column(name = "updated", nullable = false)
     private LocalDateTime updated;
 
 
-    public Task(UUID id, String title, String description, LocalDateTime localDateTime, TaskStatus status, TaskPriority priority, Object o, Object taskList, Object updated) {
+    public Task() {
+    }
+
+    //    public Task(UUID id, String title, String description, LocalDateTime localDateTime, TaskStatus status, TaskPriority priority, Object o, Object taskList, Object updated) {
+//    }
+    public Task(String title, String description, LocalDateTime dueDate, TaskStatus status, TaskPriority priority, TaskList taskList) {
+        this.id =null;
+        this.title = title;
+        this.description = description;
+        this.dueDate = dueDate;
+        this.status = status != null ? status : TaskStatus.OPEN;
+        this.priority = priority != null ? priority : TaskPriority.MEDIUM;
+        this.taskList = taskList;
+        this.created = LocalDateTime.now();
+        this.updated = LocalDateTime.now();
     }
 
     public Task(LocalDateTime created, UUID id, String title, String description, LocalDateTime dueDate, TaskStatus status, TaskPriority priority, TaskList taskList, LocalDateTime updated) {

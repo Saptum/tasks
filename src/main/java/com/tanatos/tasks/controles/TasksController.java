@@ -13,6 +13,7 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping(path = "/task-lists/{task_list_id}/tasks")
+@CrossOrigin(origins = {"http://localhost:63342", "http://127.0.0.1:63342"})
 public class TasksController {
 
     private final TaskServices taskServices;
@@ -35,11 +36,30 @@ public class TasksController {
     public TaskDto createTask(
             @PathVariable("task_list_id")UUID taskListId,
             @RequestBody TaskDto taskDto){
-        Task createdTask =taskServices.createTask(
-                taskListId,
-                taskMapper.fromDto(taskDto)
-        );
-        return taskMapper.toDto(createdTask);
+        if(taskDto == null){
+            throw new IllegalArgumentException("Task data cannot be null");
+        }
+        if(taskDto.title() == null || taskDto.title().isBlank()){
+            throw new IllegalArgumentException("Task title is required");
+        }
+        if(taskListId == null){
+            throw new IllegalArgumentException("Task list ID is required");
+        }
+
+        try{
+            Task taskToCreate = taskMapper.fromDto(taskDto);
+            Task createdTask = taskServices.createTask(taskListId, taskToCreate);
+            return taskMapper.toDto(createdTask);
+        }catch(Exception e){
+            System.err.println("Error creating task: " + e.getMessage());
+            e.printStackTrace();
+            throw e;
+        }
+//        Task createdTask =taskServices.createTask(
+//                taskListId,
+//                taskMapper.fromDto(taskDto)
+//        );
+//        return taskMapper.toDto(createdTask);
     }
 
     @GetMapping(path = "/{task_id}")

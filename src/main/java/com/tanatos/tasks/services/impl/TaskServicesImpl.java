@@ -37,23 +37,25 @@ public class TaskServicesImpl implements TaskServices {
     @Transactional
     @Override
     public Task createTask(UUID taskListId, Task task) {
-        if (null != task.getId()){
-            throw new IllegalArgumentException("Task already has an ID");
+        if (task == null) {
+            throw new IllegalArgumentException("Task cannot be null");
         }
-        if (null == task.getTitle() || task.getTitle().isBlank()){
+        if (task.getTitle() == null || task.getTitle().isBlank()) {
             throw new IllegalArgumentException("Task must have a title");
         }
 
         TaskPriority taskPriority = Optional.ofNullable(task.getPriority())
                 .orElse(TaskPriority.MEDIUM);
 
-        TaskStatus taskStatus = TaskStatus.OPEN;
+        TaskStatus taskStatus = Optional.ofNullable(task.getStatus())
+                .orElse(TaskStatus.OPEN);
 
         TaskList taskList = taskListRepositories.findById(taskListId)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid Task List ID provided"));
 
         LocalDateTime now = LocalDateTime.now();
         Task taskToSave = new Task(
+                now,
                 null,
                 task.getTitle(),
                 task.getDescription(),
@@ -61,7 +63,6 @@ public class TaskServicesImpl implements TaskServices {
                 taskStatus,
                 taskPriority,
                 taskList,
-                now,
                 now
         );
 
