@@ -3,6 +3,7 @@ package com.tanatos.tasks.domain.entities;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
@@ -45,6 +46,11 @@ public class TaskList {
         this.tasks = tasks;
         this.created = created;
         this.updated = updated;
+    }
+
+    public TaskList(String title, String description) {
+        this(null,title,description, new ArrayList<>(),
+                LocalDateTime.now(),LocalDateTime.now());
     }
 
     public UUID getId() {

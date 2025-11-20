@@ -13,6 +13,7 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping( path = "/task-lists")
+@CrossOrigin(origins = {"http://localhost:63342", "http://127.0.0.1:63342"})
 public class TaskListController {
 
 
@@ -35,10 +36,24 @@ public class TaskListController {
 
     @PostMapping
     public TaskListDto createTaskList(@RequestBody TaskListDto taskListDto){
-        TaskList createTaskList = taskListService.createTaskList(
-                taskListMapper.fromDto(taskListDto)
-        );
-        return taskListMapper.toDto(createTaskList);
+        try {
+            if(taskListDto.title() == null || taskListDto.title().isBlank()){
+                throw new IllegalArgumentException("Title is required");
+            }
+
+            TaskList taskListToCreate = taskListMapper.fromDto(taskListDto);
+            TaskList createdTaskList = taskListService.createTaskList(taskListToCreate);
+
+            return taskListMapper.toDto(createdTaskList);
+        }catch (Exception e){
+            System.err.println("Error creating task list: " + e.getMessage());
+            e.printStackTrace();
+            throw e;
+        }
+//        TaskList createTaskList = taskListService.createTaskList(
+//                taskListMapper.fromDto(taskListDto)
+//        );
+//        return taskListMapper.toDto(createTaskList);
     }
 
     @GetMapping(path = "/{task_list_id}")

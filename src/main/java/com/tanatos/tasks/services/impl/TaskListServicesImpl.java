@@ -4,6 +4,8 @@ import com.tanatos.tasks.domain.entities.TaskList;
 import com.tanatos.tasks.repositories.TaskListRepositories;
 import com.tanatos.tasks.services.TaskListServices;
 import jakarta.transaction.Transactional;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -18,6 +20,8 @@ public class TaskListServicesImpl implements TaskListServices {
 
     private final TaskListRepositories taskListRepositories;
 
+    private static final Logger logger = LoggerFactory.getLogger(TaskListServicesImpl.class);
+
     public TaskListServicesImpl(TaskListRepositories taskListRepositories) {
         this.taskListRepositories = taskListRepositories;
     }
@@ -30,6 +34,7 @@ public class TaskListServicesImpl implements TaskListServices {
 
     @Override
     public TaskList createTaskList(TaskList taskList) {
+        logger.info("Creating task list with title: {}", taskList.getTitle());
         if(null != taskList.getId()){
             throw new IllegalArgumentException("Task list already has an ID");
         }
@@ -38,17 +43,29 @@ public class TaskListServicesImpl implements TaskListServices {
         }
 
         LocalDateTime now = LocalDateTime.now();
-        taskListRepositories.save( new TaskList(
+//        taskListRepositories.save( new TaskList(
+//                null,
+//                taskList.getTitle(),
+//                taskList.getDescription(),
+//                null,
+//                now,
+//                now
+//        ));
+
+        TaskList newTaskList = new TaskList(
                 null,
                 taskList.getTitle(),
                 taskList.getDescription(),
                 null,
                 now,
                 now
-        ));
+        );
 
 
-        return null;
+        TaskList saved = taskListRepositories.save(newTaskList);
+        logger.info("Created task list with ID: {}", saved.getId());
+
+        return saved;
     }
 
     @Override
